@@ -9,22 +9,31 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+# aufgabe 3 matrix: GitHub startet pro Java-Version einen eigenen Job, alle laufen parallel
+    strategy:
+      matrix:
+        java-version: [ '17', '21' ]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+# aufgabe 3: Java-Version kommt aus der Matrix statt fix '17', sonst laufen beide Jobs mit Java 17
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: ${{ matrix.java-version }}
 # aufgabe 2 zum chaching
+# aufgabe 3: OS und Java-Version im Key, damit jede Version ihren eigenen Cache hat; restore-keys sind der Fallback, wenn kein exakter Treffer existiert
       - name: Cache Maven repository
         uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: maven-${{ hashFiles('**/pom.xml') }}
+          key: maven-${{ runner.os }}-${{ matrix.java-version }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-${{ matrix.java-version }}-
+            maven-${{ runner.os }}-
 
       - name: Build and test with Maven
         run: mvn -B clean verify
