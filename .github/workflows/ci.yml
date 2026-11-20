@@ -35,5 +35,8 @@ jobs:
             maven-${{ runner.os }}-${{ matrix.java-version }}-
             maven-${{ runner.os }}-
 
+# aufgabe 4: holt das Secret aus Settings -> Secrets und gibt es nur diesem Step als Umgebungsvariable; im Log erscheint es als ***
       - name: Build and test with Maven
+        env:
+          APP_SECRET_TOKEN: ${{ secrets.APP_SECRET_TOKEN }}
         run: mvn -B clean verify
