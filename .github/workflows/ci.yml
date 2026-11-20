@@ -19,6 +19,12 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+# aufgabe 2 zum chaching
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('**/pom.xml') }}
 
       - name: Build and test with Maven
         run: mvn -B clean verify
