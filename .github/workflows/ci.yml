@@ -40,3 +40,18 @@ jobs:
         env:
           APP_SECRET_TOKEN: ${{ secrets.APP_SECRET_TOKEN }}
         run: mvn -B clean verify
+
+# aufgabe 5: speichert das gebaute JAR nach dem Lauf, sonst ist es mit der Runner-VM weg; Version im Namen, weil beide Matrix-Jobs hochladen und Namen eindeutig sein muessen
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar-${{ matrix.java-version }}
+          path: target/demo-ci-project-1.0-SNAPSHOT.jar
+
+# aufgabe 5: Testreports sichern; if: always() laedt sie auch hoch, wenn Tests fehlschlagen, gerade dann braucht man sie
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ matrix.java-version }}
+          path: target/surefire-reports/
